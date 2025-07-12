@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Callback do Mercado Livre</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .callback-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        h2 {
+            color: #333;
+            margin: 0 0 10px 0;
+            font-size: 1.5em;
+        }
+        
+        p {
+            color: #666;
+            margin: 0;
+            font-size: 1.1em;
+        }
+        
+        @media (max-width: 768px) {
+            .callback-container {
+                padding: 30px 20px;
+            }
+            
+            h2 {
+                font-size: 1.3em;
+            }
+            
+            p {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="callback-container">
+        <div class="spinner"></div>
+        <h2>🔄 Redirecionando...</h2>
+        <p>Processando autorização do Mercado Livre...</p>
+    </div>
+
+    <script>
+        // Função para processar o callback OAuth
+        function processCallback() {
+            try {
+                // Extrair parâmetros da URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const code = urlParams.get('code');
+                const state = urlParams.get('state');
+                const error = urlParams.get('error');
+                
+                console.log('Parâmetros recebidos:', { code, state, error });
+                
+                // Processar com base nos parâmetros recebidos
+                if (code) {
+                    // Redirecionar para o localhost com code e state
+                    const redirectUrl = `http://localhost:3001/auth/callback?code=${code}&state=${state}`;
+                    console.log('Redirecionando para:', redirectUrl);
+                    window.location.href = redirectUrl;
+                } else if (error) {
+                    // Mostrar alerta e redirecionar para localhost
+                    alert('Erro na autorização: ' + error);
+                    console.log('Erro recebido:', error);
+                    window.location.href = 'http://localhost:3001';
+                } else {
+                    // Redirecionar para localhost sem parâmetros
+                    console.log('Nenhum parâmetro específico, redirecionando para localhost');
+                    window.location.href = 'http://localhost:3001';
+                }
+            } catch (err) {
+                console.error('Erro ao processar callback:', err);
+                alert('Erro interno ao processar callback');
+                window.location.href = 'http://localhost:3001';
+            }
+        }
+        
+        // Executar processamento quando a página carregar
+        window.addEventListener('load', function() {
+            // Aguardar um pouco para mostrar a interface de loading
+            setTimeout(processCallback, 1000);
+        });
+    </script>
+</body>
+</html>
